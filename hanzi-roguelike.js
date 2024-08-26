@@ -51,37 +51,58 @@ function do_redraw() {
     must_redraw = false;
 }
 
+function go_up() {
+    let new_y = 我_y - 1;
+    if (new_y >= 0 && 世界[new_y][我_x] == 0) {
+        我_y = new_y;
+        must_redraw = true;
+    }
+    if (must_redraw) {
+        do_redraw();
+    }
+}
+function go_down() {
+    let new_y = 我_y + 1;
+    if (new_y < 世界_height && 世界[new_y][我_x] == 0) {
+        我_y = new_y;
+        must_redraw = true;
+    }
+    if (must_redraw) {
+        do_redraw();
+    }
+}
+function go_left() {
+    let new_x = 我_x - 1;
+    if (new_x >= 0 && 世界[我_y][new_x] == 0) {
+        我_x = new_x;
+        must_redraw = true;
+    }
+    if (must_redraw) {
+        do_redraw();
+    }
+}
+function go_right() {
+    let new_x = 我_x + 1;
+    if (new_x < 世界_width && 世界[我_y][new_x] == 0) {
+        我_x = new_x;
+        must_redraw = true;
+    }
+    if (must_redraw) {
+        do_redraw();
+    }
+}
+
 function on_key(e) {
     const key = e.key.toUpperCase();
 
     if (key === "W") {
-        new_y = 我_y - 1;
-        if (new_y >= 0 && 世界[new_y][我_x] == 0) {
-            我_y = new_y;
-            must_redraw = true;
-        }
+        go_up();
     } else if (key === "S") {
-        new_y = 我_y + 1;
-        if (new_y < 世界_height && 世界[new_y][我_x] == 0) {
-            我_y = new_y;
-            must_redraw = true;
-        }
+        go_down();
     } else if (key === "A") {
-        new_x = 我_x - 1;
-        if (new_x >= 0 && 世界[我_y][new_x] == 0) {
-            我_x = new_x;
-            must_redraw = true;
-        }
+        go_left();
     } else if (key === "D") {
-        new_x = 我_x + 1;
-        if (new_x < 世界_width && 世界[我_y][new_x] == 0) {
-            我_x = new_x;
-            must_redraw = true;
-        }
-    }
-
-    if (must_redraw) {
-        do_redraw();
+        go_right();
     }
 }
 
@@ -89,5 +110,11 @@ document.addEventListener('keydown', on_key);
 
 window.onload = function() {
     gameview = document.getElementById("gameview");
+
+    document.getElementById("button-up").onclick = go_up;
+    document.getElementById("button-down").onclick = go_down;
+    document.getElementById("button-left").onclick = go_left;
+    document.getElementById("button-right").onclick = go_right;
+
     do_redraw();
 }

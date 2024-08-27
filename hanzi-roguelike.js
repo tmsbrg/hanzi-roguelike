@@ -14,18 +14,24 @@ function do_redraw() {
         let drawrow = [];
         for (let x = 0; x < row.length; x++) {
             let cell = row[x];
-            if (cell === 1) {
+            if (cell === 50) {
                 drawrow.push("<span class=\"wall\">墙</span>");
-            } else if (cell === 2) {
+            } else if (cell === 51) {
                 drawrow.push("<span class=\"water\">水</span>");
-            } else if (cell === 3) {
+            } else if (cell === 52) {
                 drawrow.push("<span class=\"fence\">栏</span>");
-            } else if (cell === 4) {
+            } else if (cell === 53) {
                 drawrow.push("<span class=\"mountain\">山</span>");
-            } else if (cell === 5) {
+            } else if (cell === 54) {
                 drawrow.push("<span class=\"tree\">树</span>");
             } else if (cell === 0) {
                 drawrow.push("<span class=\"grass\">⼂</span>");
+            } else if (cell === 1) {
+                drawrow.push("<span class=\"indoor\">⼂</span>");
+            } else if (cell === 2) {
+                drawrow.push("<span class=\"dirt\">⼂</span>");
+            } else if (cell === 10) {
+                drawrow.push("<span class=\"bridge\">桥</span>");
             } else {
                 drawrow.push("？");
             }
@@ -65,10 +71,12 @@ function move_player(new_x, new_y) {
         if (new_x === actor.x && new_y === actor.y) {
             if (actor.interact_function == null) {
                 statusinfo.textContent = "You bump into " + actor.name + ".";
+                return;
             } else {
-                actor.interact_function()
+                if (!actor.interact_function()) {
+                    return;
+                }
             }
-            return;
         }
     }
     if (new_x < 0) {
@@ -91,7 +99,7 @@ function move_player(new_x, new_y) {
             player_y = 0;
             do_redraw();
         }
-    } else if (currentroom.map[new_y][new_x] == 0) {
+    } else if (currentroom.map[new_y][new_x] < 50) {
         player_x = new_x;
         player_y = new_y;
         do_redraw();

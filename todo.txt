@@ -1,0 +1,11 @@
+ [x] multiple rooms
+ [ ] multiple actors
+    [ ] 父
+    [ ] 母
+    [ ] 门
+    [ ] 人
+    [ ] 羊
+    [ ] 猫
+    [ ] 钮
+    [ ] 鼠
+ [ ] colors

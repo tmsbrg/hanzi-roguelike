@@ -1,66 +1,34 @@
 
-var must_redraw = false;
+// player coordinates in the room
+var player_x = 7;
+var player_y = 5;
 
-var player_x = 5;
-var player_y = 4;
-
-var world = [
-    [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,0, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,1,0,1,1,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ]
-];
-/*
-var world = [
-    [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0, ],
-    [ 1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,1,1,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1, ],
-    [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, ]
-];
-*/
-
-const world_width = world[0].length;
-const world_height = world.length;
-
+// player coordinates in the world
+var world_x = 0;
+var world_y = 0;
 
 function do_redraw() {
     let newhtml = "";
-    for (let y = 0; y < world.length; y++) {
-        row = world[y];
+    for (let y = 0; y < currentroom.map.length; y++) {
+        row = currentroom.map[y];
         for (let x = 0; x < row.length; x++) {
             cell = row[x];
             if (x === player_x && y === player_y) {
                 newhtml += "我";
             } else if (cell === 1) {
                 newhtml += "墙";
-            }
-            else if (cell === 0) {
+            } else if (cell === 2) {
+                newhtml += "水";
+            } else if (cell === 3) {
+                newhtml += "栏";
+            } else if (cell === 4) {
+                newhtml += "山";
+            } else if (cell === 5) {
+                newhtml += "树";
+            } else if (cell === 0) {
                 //newhtml += "。";
                 newhtml += "⼂";
-            }
-            else {
+            } else {
                 newhtml += "？";
             }
         }
@@ -70,45 +38,62 @@ function do_redraw() {
     must_redraw = false;
 }
 
+// go to a different area in the world
+// returns true on success, otherwise false
+function go_room(new_world_x, new_world_y) {
+    if (new_world_x < 0 || new_world_x >= world_width ||
+        new_world_y < 0 || new_world_y >= world_height || 
+        world[new_world_y][new_world_x] === null) {
+        return false;
+    }
+    world_x = new_world_x;
+    world_y = new_world_y;
+    currentroom = world[world_y][world_x];
+    return true;
+}
+
+function move_player(new_x, new_y) {
+    if (new_x < 0) {
+        if (go_room(world_x - 1, world_y)) {
+            player_x = room_width - 1; 
+            do_redraw();
+        }
+    } else if (new_x >= room_width) {
+        if (go_room(world_x + 1, world_y)) {
+            player_x = 0;
+            do_redraw();
+        }
+    } else if (new_y < 0) {
+        if (go_room(world_x, world_y - 1)) {
+            player_y = room_height - 1;
+            do_redraw();
+        }
+    } else if (new_y >= room_height) {
+        if (go_room(world_x, world_y + 1)) {
+            player_y = 0;
+            do_redraw();
+        }
+    } else if (currentroom.map[new_y][new_x] == 0) {
+        player_x = new_x;
+        player_y = new_y;
+        do_redraw();
+    }
+}
+
 function go_up() {
-    let new_y = player_y - 1;
-    if (new_y >= 0 && world[new_y][player_x] == 0) {
-        player_y = new_y;
-        must_redraw = true;
-    }
-    if (must_redraw) {
-        do_redraw();
-    }
+    move_player(player_x, player_y - 1);
 }
+
 function go_down() {
-    let new_y = player_y + 1;
-    if (new_y < world_height && world[new_y][player_x] == 0) {
-        player_y = new_y;
-        must_redraw = true;
-    }
-    if (must_redraw) {
-        do_redraw();
-    }
+    move_player(player_x, player_y + 1);
 }
+
 function go_left() {
-    let new_x = player_x - 1;
-    if (new_x >= 0 && world[player_y][new_x] == 0) {
-        player_x = new_x;
-        must_redraw = true;
-    }
-    if (must_redraw) {
-        do_redraw();
-    }
+    move_player(player_x - 1, player_y);
 }
+
 function go_right() {
-    let new_x = player_x + 1;
-    if (new_x < world_width && world[player_y][new_x] == 0) {
-        player_x = new_x;
-        must_redraw = true;
-    }
-    if (must_redraw) {
-        do_redraw();
-    }
+    move_player(player_x + 1, player_y);
 }
 
 function on_key(e) {

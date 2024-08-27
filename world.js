@@ -4,6 +4,16 @@ class Room {
         this.actors = actors
     }
 }
+
+class Actor {
+    constructor(graphic, name, x, y) {
+        this.graphic = graphic
+        this.name = name
+        this.x = x
+        this.y = y
+    }
+}
+
 var room00 = new Room([
     [ 3,3,3,3,3,3,3,3,3,3,3,3,3,3,3, ],
     [ 3,0,0,0,0,0,0,0,0,0,0,0,0,0,3, ],
@@ -19,7 +29,10 @@ var room00 = new Room([
     [ 3,0,0,0,0,0,0,0,0,0,1,1,1,0,3, ],
     [ 3,0,0,0,0,0,0,0,0,0,0,0,0,0,3, ],
     [ 3,3,3,3,3,3,0,0,0,0,3,3,3,3,3, ]
-], []);
+], [
+    new Actor("父", "father", 4, 4),
+    new Actor("母", "mother", 8, 5),
+]);
 
 const room_height = room00.map.length;
 const room_width = room00.map[0].length;

@@ -8,31 +8,38 @@ var world_x = 0;
 var world_y = 0;
 
 function do_redraw() {
-    let newhtml = "";
+    let screen = [];
     for (let y = 0; y < currentroom.map.length; y++) {
-        row = currentroom.map[y];
+        let row = currentroom.map[y];
+        let drawrow = [];
         for (let x = 0; x < row.length; x++) {
-            cell = row[x];
-            if (x === player_x && y === player_y) {
-                newhtml += "我";
-            } else if (cell === 1) {
-                newhtml += "墙";
+            let cell = row[x];
+            if (cell === 1) {
+                drawrow.push("<span class=\"wall\">墙</span>");
             } else if (cell === 2) {
-                newhtml += "水";
+                drawrow.push("<span class=\"water\">水</span>");
             } else if (cell === 3) {
-                newhtml += "栏";
+                drawrow.push("<span class=\"fence\">栏</span>");
             } else if (cell === 4) {
-                newhtml += "山";
+                drawrow.push("<span class=\"mountain\">山</span>");
             } else if (cell === 5) {
-                newhtml += "树";
+                drawrow.push("<span class=\"tree\">树</span>");
             } else if (cell === 0) {
-                //newhtml += "。";
-                newhtml += "⼂";
+                drawrow.push("<span class=\"grass\">⼂</span>");
             } else {
-                newhtml += "？";
+                drawrow.push("？");
             }
         }
-        newhtml += "<br/>"
+        screen.push(drawrow);
+    }
+    for (const actor of currentroom.actors) {
+        screen[actor.y][actor.x] = actor.graphic;
+    }
+    screen[player_y][player_x] = "<span class=\"player\">我</span>";
+
+    let newhtml = "";
+    for (drawrow of screen) {
+        newhtml += drawrow.join("") + "<br/>"
     }
     gameview.innerHTML = newhtml;
     must_redraw = false;
@@ -53,6 +60,12 @@ function go_room(new_world_x, new_world_y) {
 }
 
 function move_player(new_x, new_y) {
+    for (const actor of currentroom.actors) {
+        if (new_x === actor.x && new_y === actor.y) {
+            statusinfo.textContent = "You bump into " + actor.name + ".";
+            return;
+        }
+    }
     if (new_x < 0) {
         if (go_room(world_x - 1, world_y)) {
             player_x = room_width - 1; 
@@ -114,6 +127,7 @@ document.addEventListener('keydown', on_key);
 
 window.onload = function() {
     gameview = document.getElementById("gameview");
+    statusinfo = document.getElementById("status");
 
     document.getElementById("button-up").onclick = go_up;
     document.getElementById("button-down").onclick = go_down;

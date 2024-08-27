@@ -1,3 +1,33 @@
 body {
   font-family: "Courier", "Courier New", monospace;
+  background-color: #000;
+  color: #ddd;
+}
+
+.player {
+    color: #fff;
+}
+
+.water {
+    color: #87CEFA;
+}
+
+.grass {
+    color: #32CD32;
+}
+
+.tree {
+    color: #CD853F;
+}
+
+.wall {
+    color: #DEB887;
+}
+
+.fence {
+    color: #D2B48C;
+}
+
+.mountain {
+    color: #8B4513;
 }

@@ -6,12 +6,52 @@ class Room {
 }
 
 class Actor {
-    constructor(graphic, name, x, y) {
+    constructor(graphic, name, x, y, interact_function = null) {
         this.graphic = graphic
         this.name = name
         this.x = x
         this.y = y
+        this.interact_function = interact_function
     }
+}
+
+function add_context_buttons(buttoninfo) {
+    buttonLoop: for (button of buttoninfo) {
+        let btn = document.createElement("button");
+        btn.innerHTML = button[0];
+        btn.addEventListener("click", button[1]);
+        contextbuttons.appendChild(btn);
+    }
+}
+
+function reset_context_buttons() {
+    contextbuttons.innerHTML = null;
+}
+
+function set_context_buttons(text, buttoninfo) {
+    reset_context_buttons();
+    contextbuttons.textContent = text;
+    add_context_buttons(buttoninfo);
+}
+
+function mother_subject_father() {
+    statusinfo.textContent = "Mother: Your father has been getting more and more ill recently. I'm afraid only your aunt Leane may know how to make him better again.";
+    mother_subjects.set("aunt Leane", function() {
+        statusinfo.textContent = "Mother: She lives on a farm in the hills east of the river. It's a bit of a walk, I'm afraid. I hope you're willing to get to her for your father's sake.";
+    });
+    set_context_buttons("Subjects:", mother_subjects);
+}
+
+mother_subjects = new Map();
+mother_subjects.set("father", mother_subject_father);
+mother_subjects.set("bye", function() {
+    statusinfo.textContent = "Mother: See you soon, son. And remember to eat your vitamins!";
+    reset_context_buttons();
+});
+
+function talk_to_mother() {
+    statusinfo.textContent = "You talk to your mother.";
+    set_context_buttons("Subjects:", mother_subjects);
 }
 
 var room00 = new Room([
@@ -30,8 +70,8 @@ var room00 = new Room([
     [ 3,0,0,0,0,0,0,0,0,0,0,0,0,0,3, ],
     [ 3,3,3,3,3,3,0,0,0,0,3,3,3,3,3, ]
 ], [
-    new Actor("父", "father", 4, 4),
-    new Actor("母", "mother", 8, 5),
+    new Actor("父", "father", 4, 4, function() { statusinfo.textContent = "Your father is sleeping soundly on the bed." }),
+    new Actor("母", "mother", 8, 5, talk_to_mother),
 ]);
 
 const room_height = room00.map.length;
@@ -149,5 +189,3 @@ var world = [
 
 const world_width = world.length;
 const world_height = world.length;
-
-var currentroom = world[world_y][world_x];

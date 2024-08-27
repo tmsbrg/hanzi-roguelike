@@ -60,9 +60,14 @@ function go_room(new_world_x, new_world_y) {
 }
 
 function move_player(new_x, new_y) {
+    reset_context_buttons();
     for (const actor of currentroom.actors) {
         if (new_x === actor.x && new_y === actor.y) {
-            statusinfo.textContent = "You bump into " + actor.name + ".";
+            if (actor.interact_function == null) {
+                statusinfo.textContent = "You bump into " + actor.name + ".";
+            } else {
+                actor.interact_function()
+            }
             return;
         }
     }
@@ -126,8 +131,11 @@ function on_key(e) {
 document.addEventListener('keydown', on_key);
 
 window.onload = function() {
+    currentroom = world[world_y][world_x];
+
     gameview = document.getElementById("gameview");
     statusinfo = document.getElementById("status");
+    contextbuttons = document.getElementById("context-buttons");
 
     document.getElementById("button-up").onclick = go_up;
     document.getElementById("button-down").onclick = go_down;

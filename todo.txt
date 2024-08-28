@@ -1,11 +1,11 @@
- [x] multiple rooms
- [x] multiple actors
-    [x] 父
-    [x] 母
-    [ ] 门
-    [ ] 人
-    [ ] 羊
-    [ ] 猫
-    [ ] 钮
-    [ ] 鼠
- [ ] colors
+ [ ] people in village
+ [ ] talk to people
+ [ ] actors act independently
+    [ ] sheep move
+    [ ] dog bark
+    [ ] text and log system
+ [ ] fix the bridge
+ [ ] ruined town
+ [ ] rats
+ [ ] battle system
+ [ ] fruit

@@ -1,11 +1,11 @@
 
+// player coordinates in the world
+var world_x = 0;
+var world_y = 1;
+
 // player coordinates in the room
 var player_x = 7;
 var player_y = 5;
-
-// player coordinates in the world
-var world_x = 0;
-var world_y = 0;
 
 function do_redraw() {
     let screen = [];
@@ -24,6 +24,8 @@ function do_redraw() {
                 drawrow.push("<span class=\"mountain\">山</span>");
             } else if (cell === 54) {
                 drawrow.push("<span class=\"tree\">树</span>");
+            } else if (cell === 55) {
+                drawrow.push("<span class=\"window\">窗</span>");
             } else if (cell === 0) {
                 drawrow.push("<span class=\"grass\">⼂</span>");
             } else if (cell === 1) {
@@ -32,6 +34,8 @@ function do_redraw() {
                 drawrow.push("<span class=\"dirt\">⼂</span>");
             } else if (cell === 10) {
                 drawrow.push("<span class=\"bridge\">桥</span>");
+            } else if (cell === 11) {
+                drawrow.push("<span class=\"grain\">禾</span>");
             } else {
                 drawrow.push("？");
             }

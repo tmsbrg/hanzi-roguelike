@@ -70,11 +70,12 @@ function go_room(new_world_x, new_world_y) {
 }
 
 function move_player(new_x, new_y) {
+    reset_status();
     reset_context_buttons();
     for (const actor of currentroom.actors) {
         if (new_x === actor.x && new_y === actor.y) {
             if (actor.interact_function == null) {
-                statusinfo.textContent = "You bump into " + actor.name + ".";
+                message("You bump into the " + actor.name + ".");
                 return;
             } else {
                 if (!actor.interact_function()) {

@@ -1,11 +1,12 @@
- [ ] people in village
- [ ] talk to people
+ [x] people in village
+ [x] talk to people
  [ ] actors act independently
     [ ] sheep move
     [ ] dog bark
     [ ] text and log system
- [ ] fix the bridge
+ [x] fix the bridge
  [ ] ruined town
  [ ] rats
  [ ] battle system
  [ ] fruit
+ [ ] save/load

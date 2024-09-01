@@ -6,12 +6,38 @@ class Room {
 }
 
 class Actor {
-    constructor(graphic, name, x, y, interact_function = null) {
+    constructor(graphic, name, x, y, interact_function = null, act_function = null) {
         this.graphic = graphic;
         this.name = name;
         this.x = x;
         this.y = y;
         this.interact_function = interact_function;
+        this.act_function = act_function;
+        this.act_cooldown = 0;
+    }
+
+    move(new_x, new_y) {
+        for (const actor of currentroom.actors) {
+            if (new_x === actor.x && new_y === actor.y) {
+                return false;
+            }
+        }
+        if (new_x < 0 || new_x >= room_width || new_y < 0 || new_y >= room_height || currentroom.map[new_y][new_x] >= 50 || (player_x === new_x && player_y === new_y)) {
+            return false;
+        }
+        this.x = new_x;
+        this.y = new_y;
+        return true;
+    }
+
+    act(step) {
+        if (this.act_function == null) {
+            return;
+        }
+        this.act_cooldown -= step;
+        while (this.act_cooldown <= 0) {
+            this.act_function();
+        }
     }
 }
 
@@ -209,6 +235,31 @@ var room12 = new Room([
     [ 54,00,00,00,00,54,00,00,02,02,00,00,00,51,51, ]
 ], []);
 
+function sheep_act() {
+    this.act_cooldown += 100;
+    if (Math.random() < 0.1) {
+        message("The sheep baas.")
+        this.act_cooldown += 100;
+    } else if (Math.random() < 0.1) {
+        let direction = Math.floor(Math.random() * 4);
+        switch (direction) {
+            case 0:
+                this.move(this.x - 1, this.y);
+                break;
+            case 1:
+                this.move(this.x + 1, this.y);
+                break;
+            case 2:
+                this.move(this.x, this.y - 1);
+                break;
+            case 3:
+                this.move(this.x, this.y + 1);
+                break;
+        }
+        this.act_cooldown += 100;
+    }
+}
+
 var room11 = new Room([
     [ 53,53,53,53,53,53,53,00,00,02,02,00,53,53,53, ],
     [ 53,00,00,00,00,00,00,00,00,02,02,00,00,00,00, ],
@@ -225,9 +276,9 @@ var room11 = new Room([
     [ 54,00,54,00,54,00,00,00,54,00,00,00,00,00,00, ],
     [ 54,54,54,54,54,54,54,54,54,54,54,54,54,54,54, ]
 ], [
-    new Actor("羊", "sheep", 2, 2, messenger("The sheep stares at you while eating grass")),
-    new Actor("羊", "sheep", 4, 2, messenger("The sheep stares at you while eating grass")),
-    new Actor("羊", "sheep", 4, 4, messenger("The sheep stares at you while eating grass")),
+    new Actor("羊", "sheep", 2, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
+    new Actor("羊", "sheep", 4, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
+    new Actor("羊", "sheep", 4, 4, messenger("The sheep stares at you while eating grass"), sheep_act),
     new Actor("狗", "dog", 7, 3, messenger("The dog barks at you.")),
     new Actor("人", "shepherd", 8, 5, say("Do you want to cross the river? It's dangerous on the other side. You may want to talk to the village elder.")),
 ]);

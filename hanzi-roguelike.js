@@ -1,11 +1,13 @@
 
 // player coordinates in the world
-var world_x = 0;
+var world_x = 1;
 var world_y = 1;
 
 // player coordinates in the room
 var player_x = 7;
 var player_y = 5;
+
+var player_act_cooldown = 0;
 
 function do_redraw() {
     let screen = [];
@@ -52,7 +54,6 @@ function do_redraw() {
         newhtml += drawrow.join("") + "<br/>"
     }
     gameview.innerHTML = newhtml;
-    must_redraw = false;
 }
 
 // go to a different area in the world
@@ -67,6 +68,26 @@ function go_room(new_world_x, new_world_y) {
     world_y = new_world_y;
     currentroom = world[world_y][world_x];
     return true;
+}
+
+function world_act() {
+    while (player_act_cooldown > 0) {
+        let step = (player_act_cooldown < 100) ? player_act_cooldown : 100;
+        player_act_cooldown -= step;
+        for (actor of currentroom.actors) {
+            actor.act(step);
+        }
+        do_redraw();
+    }
+}
+
+function on_player_acted(player_action_cooldown) {
+    player_act_cooldown = 100;
+    world_act();
+}
+
+function on_successful_player_move() {
+    on_player_acted(100);
 }
 
 function move_player(new_x, new_y) {
@@ -87,27 +108,27 @@ function move_player(new_x, new_y) {
     if (new_x < 0) {
         if (go_room(world_x - 1, world_y)) {
             player_x = room_width - 1; 
-            do_redraw();
+            on_successful_player_move();
         }
     } else if (new_x >= room_width) {
         if (go_room(world_x + 1, world_y)) {
             player_x = 0;
-            do_redraw();
+            on_successful_player_move();
         }
     } else if (new_y < 0) {
         if (go_room(world_x, world_y - 1)) {
             player_y = room_height - 1;
-            do_redraw();
+            on_successful_player_move();
         }
     } else if (new_y >= room_height) {
         if (go_room(world_x, world_y + 1)) {
             player_y = 0;
-            do_redraw();
+            on_successful_player_move();
         }
     } else if (currentroom.map[new_y][new_x] < 50) {
         player_x = new_x;
         player_y = new_y;
-        do_redraw();
+        on_successful_player_move();
     }
 }
 

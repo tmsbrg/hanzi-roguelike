@@ -18,19 +18,33 @@
   -->
 </head>
 <body>
-<pre>
-<p id="gameview">
-Please enable JavaScript to play the game :)
-</p>
-</pre>
-<div id="status">
+<div class="main-screen">
+    <div class="left-screen">
+        <div>
+            <pre>
+            <p id="gameview">
+            Please enable JavaScript to play the game :)
+            </p>
+            </pre>
+        </div>
+        <div class="bottom-buttons">
+            <div>
+                <p><button id="button-up">Up</button></p>
+                <p><button id="button-left">Left</button>
+                <button id="button-right">Right</button></p>
+                <p><button id="button-down">Down</button></p>
+            </div>
+            <div>
+                <p><button id="button-wait">Wait</button></p>
+            </div>
+        </div>
+    </div>
+    <div class="statusview">
+        <p id="status">
+        </p>
+        <div id="context-buttons">
+        </div>
+    </div>
 </div>
-<p id="context-buttons">
-</p>
 
-<p><button id="button-up">Up</button></p>
-<p><button id="button-left">Left</button>
-<button id="button-right">Right</button></p>
-<p><button id="button-down">Down</button></p>
-<p><button id="button-wait">Wait</button></p>
 </body>

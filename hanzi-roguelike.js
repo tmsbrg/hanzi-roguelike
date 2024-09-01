@@ -1,13 +1,20 @@
 
 // player coordinates in the world
-var world_x = 1;
+var world_x = 0;
 var world_y = 1;
+
+var player_graphic = "<span class=\"player\">我</span>";
 
 // player coordinates in the room
 var player_x = 7;
 var player_y = 5;
 
+var player_health = 10;
+
 var player_act_cooldown = 0;
+
+var player_max_health = 10;
+var player_health = player_max_health;
 
 function do_redraw() {
     let screen = [];
@@ -34,6 +41,8 @@ function do_redraw() {
                 drawrow.push("<span class=\"indoor\">⼂</span>");
             } else if (cell === 2) {
                 drawrow.push("<span class=\"dirt\">⼂</span>");
+            } else if (cell === 3) {
+                drawrow.push("<span class=\"blood\">⼂</span>");
             } else if (cell === 10) {
                 drawrow.push("<span class=\"bridge\">桥</span>");
             } else if (cell === 11) {
@@ -47,13 +56,24 @@ function do_redraw() {
     for (const actor of currentroom.actors) {
         screen[actor.y][actor.x] = actor.graphic;
     }
-    screen[player_y][player_x] = "<span class=\"player\">我</span>";
+    screen[player_y][player_x] = player_graphic;
 
     let newhtml = "";
     for (drawrow of screen) {
         newhtml += drawrow.join("") + "<br/>"
     }
     gameview.innerHTML = newhtml;
+}
+
+function damage_player(damage) {
+    currentroom.map[player_y][player_x] = 3;
+    player_health -= damage;
+    if (player_health > 0) {
+        message(`${player_health} health left`);
+    } else {
+        message("You died!");
+        player_graphic = "<span class=\"blood\">我</span>"
+    }
 }
 
 // go to a different area in the world
@@ -81,16 +101,19 @@ function world_act() {
     }
 }
 
-function on_player_acted(player_action_cooldown) {
-    player_act_cooldown = 100;
+function on_player_acted(cooldown = 100) {
+    player_act_cooldown = cooldown;
     world_act();
 }
 
 function on_successful_player_move() {
-    on_player_acted(100);
+    on_player_acted();
 }
 
 function move_player(new_x, new_y) {
+    if (player_health <= 0) {
+        return;
+    }
     reset_status();
     reset_context_buttons();
     for (const actor of currentroom.actors) {
@@ -148,6 +171,15 @@ function go_right() {
     move_player(player_x + 1, player_y);
 }
 
+function go_wait() {
+    if (player_health <= 0) {
+        return;
+    }
+    reset_status();
+    reset_context_buttons();
+    on_player_acted(100);
+}
+
 function on_key(e) {
     const key = e.key.toUpperCase();
 
@@ -159,6 +191,8 @@ function on_key(e) {
         go_left();
     } else if (key === "D") {
         go_right();
+    } else if (key === ".") {
+        go_wait();
     }
 }
 
@@ -175,6 +209,7 @@ window.onload = function() {
     document.getElementById("button-down").onclick = go_down;
     document.getElementById("button-left").onclick = go_left;
     document.getElementById("button-right").onclick = go_right;
+    document.getElementById("button-wait").onclick = go_wait;
 
     do_redraw();
 }

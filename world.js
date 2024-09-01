@@ -1,3 +1,9 @@
+// directions
+const LEFT = 0;
+const RIGHT = 1;
+const UP = 2;
+const DOWN = 3;
+
 class Room {
     constructor(map, actors) {
         this.map = map;
@@ -6,7 +12,7 @@ class Room {
 }
 
 class Actor {
-    constructor(graphic, name, x, y, interact_function = null, act_function = null) {
+    constructor(graphic, name, x, y, interact_function = null, act_function = null, health = 1) {
         this.graphic = graphic;
         this.name = name;
         this.x = x;
@@ -14,6 +20,24 @@ class Actor {
         this.interact_function = interact_function;
         this.act_function = act_function;
         this.act_cooldown = 0;
+        this.health = health;
+    }
+
+    move_direction(direction) {
+        switch (direction) {
+            case LEFT:
+                this.move(this.x - 1, this.y);
+                break;
+            case RIGHT:
+                this.move(this.x + 1, this.y);
+                break;
+            case UP:
+                this.move(this.x, this.y - 1);
+                break;
+            case DOWN:
+                this.move(this.x, this.y + 1);
+                break;
+        }
     }
 
     move(new_x, new_y) {
@@ -39,6 +63,58 @@ class Actor {
             this.act_function();
         }
     }
+
+    die() {
+        message(`${this.name} dies.`);
+        for (let i = 0; i < currentroom.actors.length; i++) {
+            let actor = currentroom.actors[i];
+            if (actor === this) {
+                currentroom.actors.splice(i, 1, new Actor(`<span class="blood">${this.graphic}</span>`, `${this.name} corpse`, this.x, this.y));
+                return;
+            }
+        }
+    }
+}
+
+function random_choice(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
+// manhattan distance
+function tile_distance(x1, y1, x2, y2) {
+    return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+}
+
+function tile_is_adjacent(x1, y1, x2, y2) {
+    return (x1 === x2 && Math.abs(y2 - y1) <= 1) ||
+        (y1 === y2 &&  Math.abs(x2 - x1) <= 1);
+}
+
+function tile_directions(from_x, from_y, target_x, target_y) {
+    let r = [];
+    if (from_x > target_x) {
+        r.push(LEFT);
+    } else if (from_x < target_x) {
+        r.push(RIGHT);
+    }
+    if (from_y > target_y) {
+        r.push(UP);
+    } else if (from_y < target_y) {
+        r.push(DOWN);
+    }
+    return r;
+}
+
+// for entities, when attacked
+function on_attacked() {
+    let damage = Math.floor(Math.random() * 2.0) + 1;
+    message(`You stab the ${this.name} for ${damage} damage.`);
+    currentroom.map[this.y][this.x] = 3;
+    this.health -= damage;
+    if (this.health <= 0) {
+        this.die();
+    }
+    on_player_acted();
 }
 
 function message(msg) {
@@ -238,24 +314,11 @@ var room12 = new Room([
 function sheep_act() {
     this.act_cooldown += 100;
     if (Math.random() < 0.1) {
-        message("The sheep baas.")
+        message(`${this.name} says "baa".`)
         this.act_cooldown += 100;
     } else if (Math.random() < 0.1) {
         let direction = Math.floor(Math.random() * 4);
-        switch (direction) {
-            case 0:
-                this.move(this.x - 1, this.y);
-                break;
-            case 1:
-                this.move(this.x + 1, this.y);
-                break;
-            case 2:
-                this.move(this.x, this.y - 1);
-                break;
-            case 3:
-                this.move(this.x, this.y + 1);
-                break;
-        }
+        this.move_direction(direction);
         this.act_cooldown += 100;
     }
 }
@@ -276,9 +339,9 @@ var room11 = new Room([
     [ 54,00,54,00,54,00,00,00,54,00,00,00,00,00,00, ],
     [ 54,54,54,54,54,54,54,54,54,54,54,54,54,54,54, ]
 ], [
-    new Actor("羊", "sheep", 2, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
-    new Actor("羊", "sheep", 4, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
-    new Actor("羊", "sheep", 4, 4, messenger("The sheep stares at you while eating grass"), sheep_act),
+    new Actor("羊", "sheep #1", 2, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
+    new Actor("羊", "sheep #2", 4, 2, messenger("The sheep stares at you while eating grass"), sheep_act),
+    new Actor("羊", "sheep #3", 4, 4, messenger("The sheep stares at you while eating grass"), sheep_act),
     new Actor("狗", "dog", 7, 3, messenger("The dog barks at you.")),
     new Actor("人", "shepherd", 8, 5, say("Do you want to cross the river? It's dangerous on the other side. You may want to talk to the village elder.")),
 ]);
@@ -380,6 +443,37 @@ var room02 = new Room([
  * accross the bridge
  */
 
+var rat_speed = 120;
+
+function rat_act() {
+    this.act_cooldown += rat_speed;
+    if (this.rat_mode == null) {
+        this.rat_mode = 0;
+    }
+    switch (this.rat_mode) {
+        case 0: // idle
+            if (tile_distance(this.x, this.y, player_x, player_y) < 3) {
+                message(`${this.name} screeches menacingly and starts running towards you!`);
+                this.rat_mode = 1;
+            } else if (Math.random() < 0.1) {
+                let direction = Math.floor(Math.random() * 4);
+                this.move_direction(direction);
+            }
+            break;
+        case 1: // attacking
+            if (tile_is_adjacent(this.x, this.y, player_x, player_y)) {
+                let damage = Math.floor(Math.random() * 2.0) + 1;
+                message(`${this.name} bites you for ${damage} damage!`);
+                damage_player(damage);
+            } else {
+                let directions = tile_directions(this.x, this.y, player_x, player_y);
+                let direction = random_choice(directions);
+                this.move_direction(direction);
+            }
+            break;
+    }
+}
+
 var room23 = new Room([
     [ 51,51,53,53,53,53,53,53,53,53,53,53,53,53,53, ],
     [ 51,51,53,53,53,53,53,53,53,53,53,53,53,53,53, ],
@@ -396,7 +490,7 @@ var room23 = new Room([
     [ 51,51,00,00,00,00,00,00,00,00,00,00,00,00,00, ],
     [ 51,51,00,00,00,00,00,00,00,00,00,00,00,00,00, ]
 ], [
-    new Actor("鼠", "giant rat", 9, 10, null),
+    new Actor("鼠", "giant rat", 9, 10, on_attacked, rat_act, 4),
     new Actor("纽", "lever", 4, 4, toggle_bridge)
 ]);
 
